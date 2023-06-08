@@ -28,11 +28,14 @@ class Player(GameSprite):
 class Enemy(GameSprite):
     def update(self):
         self.speed = 2
-        self.rect.y = 0
-        self.rect.x = 200
+        self.rect.y = ball_y
+        self.rect.x = ball_x
 w = 516
 h = 516
-speed = 3
+speed_x = 2
+speed_y = 2
+ball_y = 0
+ball_x = 200
 
 rocket1 = Player('rocket.png', 0, 0, 5, 100, 100)
 rocket2 = Player('rocket.png', 408, 5, 5, 100, 100)
@@ -49,24 +52,33 @@ font1 = font.SysFont('Arial', 36)
 clock = time.Clock()
 FPS = 60
 
-win = font1.render('ТЫ ВЫИГРАЛ!!!', True, (255, 255, 255))
-lose = font1.render('ТЫ ПРОИГРАЛ!', True, (180, 0, 0))
+win1 = font1.render('ЛЕВЫЙ ИГРОК ВЫИГРАЛ!!!', True, (180, 0, 0))
+lose1 = font1.render('ПРАВЫЙ ИГРОК ВЫИГРАЛ!!!', True, (180, 0, 0))
 
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+    window.blit(background, (0,0))
+    rocket1.update1()
+    rocket2.update2()
+    ball.update()
+    rocket1.reset()
+    rocket2.reset()
+    ball.reset()
     if not finish:
-        window.blit(background, (0,0))
-        rocket1.update1()
-        rocket2.update2()
-        ball.update()
-        rocket1.reset()
-        rocket2.reset()
-        ball.rect.y += ball.speed
-        ball.rect.x += ball.speed
+        ball_x += speed_x
+        ball_y += speed_y
         if sprite.collide_rect(rocket1, ball) or sprite.collide_rect(rocket2, ball):
-            ball.speed *= -1
-        ball.reset()
+            speed_x *= -1
+            speed_y *= 1
+        if ball_y == 486 or ball_y == 0:
+            speed_y *= -1
+        if ball_x < 0:
+            finish = True
+            window.blit(lose1, (75, 222))
+        if ball_x > 516:
+            finish = True
+            window.blit(win1, (75, 222))
         display.update()
     clock.tick(FPS)
